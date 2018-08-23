@@ -1,19 +1,25 @@
 const { assert } = require("chai");
-const { mongoose, databaseUrl, options } = require("../../database");
-
-async function connectDatabase() {
-  await mongoose.connect(
-    databaseUrl,
-    options
-  );
-  await mongoose.connection.db.dropDatabase();
-}
-
-async function disconnectDatabase() {
-  await mongoose.disconnect();
-}
-
-module.exports = {
+const {
   connectDatabase,
   disconnectDatabase
-};
+} = require("../database-utilities");
+const Video = require("../../models/video");
+
+describe("Model: Video", () => {
+  beforeEach(connectDatabase);
+  afterEach(disconnectDatabase);
+
+  describe("#title", () => {
+    it("is a string", () => {
+      const video = new Video({ title: 3 });
+      assert.strictEqual(video.title, "3");
+    });
+  });
+
+  describe("#description", () => {
+    it("is a string", () => {
+      const video = new Video({ description: 3 });
+      assert.strictEqual(video.description, "3");
+    });
+  });
+});

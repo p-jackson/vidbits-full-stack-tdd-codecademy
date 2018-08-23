@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": " sh bin/mocha-test && sh bin/wdio-test",
-    "test:mocha": "bin/mocha-test || exit 0",
-    "test:feature": "bin/wdio-test || exit 0"
+    "test:mocha": "sh bin/mocha-test || exit 0",
+    "test:feature": "sh bin/wdio-test || exit 0"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
