@@ -3,11 +3,17 @@ const Video = require("../models/video");
 
 router.post("/videos", async (req, res) => {
   const newVideo = new Video(req.body);
+  newVideo.validateSync();
 
-  await newVideo.save();
+  if (newVideo.errors) {
+    res.status(400);
+    res.render("create");
+  } else {
+    await newVideo.save();
 
-  res.status(201);
-  res.render("single-video", { video: newVideo });
+    res.status(201);
+    res.render("single-video", { video: newVideo });
+  }
 });
 
 router.get("/videos/create", (req, res) => {

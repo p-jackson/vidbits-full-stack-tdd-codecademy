@@ -11,6 +11,13 @@ describe("Model: Video", () => {
       const video = new Video({ title: 3 });
       assert.strictEqual(video.title, "3");
     });
+
+    it("is required", () => {
+      const video = new Video({});
+      video.validateSync();
+
+      assert.isOk(video.errors, "video model should contain errors");
+    });
   });
 
   describe("#description", () => {

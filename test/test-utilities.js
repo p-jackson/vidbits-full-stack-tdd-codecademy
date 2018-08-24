@@ -14,9 +14,12 @@ async function disconnectDatabase() {
   await mongoose.disconnect();
 }
 
+const findElement = (htmlAsString, selector) =>
+  jsdom(htmlAsString).querySelector(selector);
+
 // extract text from an Element by selector.
 const parseTextFromHTML = (htmlAsString, selector) => {
-  const selectedElement = jsdom(htmlAsString).querySelector(selector);
+  const selectedElement = findElement(htmlAsString, selector);
   if (selectedElement !== null) {
     return selectedElement.textContent;
   } else {
@@ -29,5 +32,6 @@ const parseTextFromHTML = (htmlAsString, selector) => {
 module.exports = {
   connectDatabase,
   disconnectDatabase,
+  findElement,
   parseTextFromHTML
 };
