@@ -1,13 +1,13 @@
 <div id="videos-container" class="contents-container">
   {{#each videos as |video|}}
     <div class="video-card">
+      <iframe class="video-player" frameborder="0" src="{{video.url}}"></iframe>
       <div class="video-title">
         {{video.title}}
       </div>
-      <iframe class="video-player" src="{{video.url}}"></iframe>
     </div>
   {{/each}}
 </div>
-<a href="/videos/create">
+<a href="/videos/create" class="add-video-button">
   Add a video
 </a>
