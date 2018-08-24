@@ -1,24 +1,12 @@
 const { assert } = require("chai");
 const request = require("supertest");
-const { jsdom } = require("jsdom");
 const {
   connectDatabase,
-  disconnectDatabase
-} = require("../database-utilities");
+  disconnectDatabase,
+  parseTextFromHTML
+} = require("../test-utilities");
 const app = require("../../app");
 const Video = require("../../models/video");
-
-// extract text from an Element by selector.
-const parseTextFromHTML = (htmlAsString, selector) => {
-  const selectedElement = jsdom(htmlAsString).querySelector(selector);
-  if (selectedElement !== null) {
-    return selectedElement.textContent;
-  } else {
-    throw new Error(
-      `No element with selector ${selector} found in HTML string`
-    );
-  }
-};
 
 describe("Server path: /videos", () => {
   beforeEach(connectDatabase);
