@@ -1,6 +1,7 @@
 <div class="contents-container">
   Save a video
   <form method="POST" action="/videos">
+    <input name="url" id="video-url" />
     <input name="title" id="video-title" />
     {{#if video.errors.title}}
       {{video.errors.title}}

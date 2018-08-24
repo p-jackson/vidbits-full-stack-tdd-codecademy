@@ -2,7 +2,9 @@ const router = require("express").Router();
 const Video = require("../models/video");
 
 router.post("/videos", async (req, res) => {
-  const newVideo = new Video(req.body);
+  const { title, description, url } = req.body;
+
+  const newVideo = new Video({ title, description, url });
   newVideo.validateSync();
 
   if (newVideo.errors) {

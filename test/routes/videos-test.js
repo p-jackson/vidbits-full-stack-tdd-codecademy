@@ -29,12 +29,19 @@ describe("Server path: /videos", () => {
       await request(app)
         .post("/videos")
         .type("form")
-        .send({ title: "title", description: "description" });
+        .send({
+          title: "title",
+          description: "description",
+          url: "https://www.youtube.com/embed/Vj-c9wA6No4"
+        });
 
       const savedVideo = await Video.findOne({});
 
-      assert.equal(savedVideo.title, "title");
-      assert.equal(savedVideo.description, "description");
+      assert.include(savedVideo, {
+        title: "title",
+        description: "description",
+        url: "https://www.youtube.com/embed/Vj-c9wA6No4"
+      });
     });
 
     it("renders the newly created video", async () => {

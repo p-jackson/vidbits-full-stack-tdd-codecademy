@@ -26,4 +26,11 @@ describe("Model: Video", () => {
       assert.strictEqual(video.description, "3");
     });
   });
+
+  describe("#url", () => {
+    it("is a string", () => {
+      const video = new Video({ url: 18 });
+      assert.strictEqual(video.url, "18");
+    });
+  });
 });
