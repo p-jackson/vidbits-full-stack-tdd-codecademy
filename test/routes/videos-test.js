@@ -84,5 +84,27 @@ describe("Server path: /videos", () => {
         "video description field should exist"
       );
     });
+
+    it("renders validation message when title is missing", async () => {
+      const response = await request(app)
+        .post("/videos")
+        .type("form")
+        .send({});
+
+      assert.include(parseTextFromHTML(response.text, "body"), "required");
+    });
+
+    it("fills in the other field values when title is missing", async () => {
+      const response = await request(app)
+        .post("/videos")
+        .type("form")
+        .send({ description: "123" });
+
+      assert.isEmpty(parseTextFromHTML(response.text, "input#video-title"));
+      assert.strictEqual(
+        parseTextFromHTML(response.text, "textarea#video-description"),
+        "123"
+      );
+    });
   });
 });

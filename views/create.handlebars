@@ -2,7 +2,10 @@
   Save a video
   <form method="POST" action="/videos">
     <input name="title" id="video-title" />
-    <textarea name="description" id="video-description"></textarea>
+    {{#if video.errors.title}}
+      {{video.errors.title}}
+    {{/if}}
+    <textarea name="description" id="video-description">{{video.description}}</textarea>
     <input type="submit" />
   </form>
 </div>
