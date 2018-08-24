@@ -28,7 +28,9 @@ describe("Server path: /", () => {
     it("renders existing video", async () => {
       await Video.create({ title: "my title", description: "my desc" });
 
-      const response = await request(app).get("/");
+      const response = await request(app)
+        .get("/")
+        .redirects(1);
 
       assert.strictEqual(response.status, 200);
       assert.include(
