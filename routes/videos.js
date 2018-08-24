@@ -14,4 +14,9 @@ router.get("/videos/create", (req, res) => {
   res.render("create");
 });
 
+router.get("/", async (req, res) => {
+  const videos = await Video.find({});
+  res.render("index", { videos });
+});
+
 module.exports = router;
