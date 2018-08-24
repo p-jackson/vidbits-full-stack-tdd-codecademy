@@ -10,9 +10,7 @@ router.post("/videos", async (req, res) => {
     res.render("create", { video: newVideo });
   } else {
     await newVideo.save();
-
-    res.status(201);
-    res.render("single-video", { video: newVideo });
+    res.redirect(`/videos/${newVideo._id}`);
   }
 });
 
@@ -23,6 +21,11 @@ router.get("/videos/create", (req, res) => {
 router.get("/videos", async (req, res) => {
   const videos = await Video.find({});
   res.render("index", { videos });
+});
+
+router.get("/videos/:id", async (req, res) => {
+  const video = await Video.findById(req.params.id);
+  res.render("single-video", { video });
 });
 
 module.exports = router;

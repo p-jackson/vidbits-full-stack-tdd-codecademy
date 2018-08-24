@@ -21,7 +21,8 @@ describe("Server path: /videos", () => {
         .type("form")
         .send({ title: "title", description: "description" });
 
-      assert.strictEqual(response.status, 201);
+      assert.strictEqual(response.status, 302);
+      assert.match(response.header.location, /^\/videos\/[a-z0-9]+$/);
     });
 
     it("saves the video to the database", async () => {
@@ -40,7 +41,8 @@ describe("Server path: /videos", () => {
       const response = await request(app)
         .post("/videos")
         .type("form")
-        .send({ title: "myvideotitle", description: "desc123" });
+        .send({ title: "myvideotitle", description: "desc123" })
+        .redirects(1);
 
       assert.include(parseTextFromHTML(response.text, "body"), "myvideotitle");
       assert.include(parseTextFromHTML(response.text, "body"), "desc123");
@@ -105,6 +107,16 @@ describe("Server path: /videos", () => {
         parseTextFromHTML(response.text, "textarea#video-description"),
         "123"
       );
+    });
+  });
+
+  describe("GET - /videos/:id", () => {
+    it("renders the video with that id", async () => {
+      const newVideo = await Video.create({ title: "my title" });
+
+      const response = await request(app).get(`/videos/${newVideo._id}`);
+
+      assert.include(parseTextFromHTML(response.text, "body"), "my title");
     });
   });
 });
