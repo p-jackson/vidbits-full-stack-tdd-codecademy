@@ -117,6 +117,28 @@ describe("Server path: /videos", () => {
     });
   });
 
+  describe("GET", () => {
+    it("renders existing videos", async () => {
+      await Video.create({
+        title: "my title",
+        description: "my desc",
+        url: "https://www.youtube.com/embed/IzIlR5kWU0w"
+      });
+
+      const response = await request(app).get("/videos");
+
+      assert.strictEqual(response.status, 200);
+      assert.include(
+        parseTextFromHTML(response.text, "#videos-container"),
+        "my title"
+      );
+      assert.strictEqual(
+        findElement(response.text, "iframe").getAttribute("src"),
+        "https://www.youtube.com/embed/IzIlR5kWU0w"
+      );
+    });
+  });
+
   describe("GET - /videos/:id", () => {
     it("renders the video with that id", async () => {
       const newVideo = await Video.create({ title: "my title" });
