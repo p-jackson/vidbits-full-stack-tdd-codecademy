@@ -16,7 +16,7 @@ describe("Model: Video", () => {
       const video = new Video({});
       video.validateSync();
 
-      assert.isOk(video.errors, "video model should contain errors");
+      assert.isOk(video.errors.title, "video model should contain errors");
     });
   });
 
@@ -31,6 +31,13 @@ describe("Model: Video", () => {
     it("is a string", () => {
       const video = new Video({ url: 18 });
       assert.strictEqual(video.url, "18");
+    });
+
+    it("is required", () => {
+      const video = new Video({ title: "my title" });
+      video.validateSync();
+
+      assert.isOk(video.errors.url, "video model should contain errors");
     });
   });
 });

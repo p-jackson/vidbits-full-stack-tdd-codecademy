@@ -6,13 +6,16 @@
     <label for="video-url">
       URL
     </label>
-    <input name="url" id="video-url" />
+    <input name="url" id="video-url" value="{{video.url}}" />
+    {{#if video.errors.url}}
+      a URL is required
+    {{/if}}
     <label for="video-title">
       Title
     </label>
     <input name="title" id="video-title" />
     {{#if video.errors.title}}
-      {{video.errors.title}}
+      a title is required
     {{/if}}
     <label for="video-description">
       Description

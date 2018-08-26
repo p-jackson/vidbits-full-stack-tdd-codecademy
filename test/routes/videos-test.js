@@ -19,7 +19,11 @@ describe("Server path: /videos", () => {
       const response = await request(app)
         .post("/videos")
         .type("form")
-        .send({ title: "title", description: "description" });
+        .send({
+          title: "title",
+          description: "description",
+          url: "https://www.youtube.com/embed/Wimkqo8gDZ0"
+        });
 
       assert.strictEqual(response.status, 302);
       assert.match(response.header.location, /^\/videos\/[a-z0-9]+$/);
@@ -48,11 +52,19 @@ describe("Server path: /videos", () => {
       const response = await request(app)
         .post("/videos")
         .type("form")
-        .send({ title: "myvideotitle", description: "desc123" })
+        .send({
+          title: "myvideotitle",
+          description: "desc123",
+          url: "https://www.youtube.com/embed/X6dJEAs0-Gk"
+        })
         .redirects(1);
 
       assert.include(parseTextFromHTML(response.text, "body"), "myvideotitle");
       assert.include(parseTextFromHTML(response.text, "body"), "desc123");
+      assert.strictEqual(
+        findElement(response.text, "iframe").getAttribute("src"),
+        "https://www.youtube.com/embed/X6dJEAs0-Gk"
+      );
     });
 
     it("doesn't save video when title is missing", async () => {
@@ -103,16 +115,35 @@ describe("Server path: /videos", () => {
       assert.include(parseTextFromHTML(response.text, "body"), "required");
     });
 
+    it("renders validation message when url is missing", async () => {
+      const response = await request(app)
+        .post("/videos")
+        .type("form")
+        .send({ title: "custom title" });
+
+      assert.include(
+        parseTextFromHTML(response.text, "body"),
+        "a URL is required"
+      );
+    });
+
     it("fills in the other field values when title is missing", async () => {
       const response = await request(app)
         .post("/videos")
         .type("form")
-        .send({ description: "123" });
+        .send({
+          description: "123",
+          url: "https://www.youtube.com/embed/1IkY0_qONRk"
+        });
 
       assert.isEmpty(parseTextFromHTML(response.text, "input#video-title"));
       assert.strictEqual(
         parseTextFromHTML(response.text, "textarea#video-description"),
         "123"
+      );
+      assert.strictEqual(
+        findElement(response.text, "input#video-url").getAttribute("value"),
+        "https://www.youtube.com/embed/1IkY0_qONRk"
       );
     });
   });
@@ -141,11 +172,18 @@ describe("Server path: /videos", () => {
 
   describe("GET - /videos/:id", () => {
     it("renders the video with that id", async () => {
-      const newVideo = await Video.create({ title: "my title" });
+      const newVideo = await Video.create({
+        title: "my title",
+        url: "https://www.youtube.com/embed/zgg1xGSGw0s"
+      });
 
       const response = await request(app).get(`/videos/${newVideo._id}`);
 
       assert.include(parseTextFromHTML(response.text, "body"), "my title");
+      assert.strictEqual(
+        findElement(response.text, "iframe").getAttribute("src"),
+        "https://www.youtube.com/embed/zgg1xGSGw0s"
+      );
     });
   });
 });
