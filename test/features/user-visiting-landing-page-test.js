@@ -4,6 +4,12 @@ const generateRandomUrl = domain => {
   return `http://${domain}/${Math.random()}`;
 };
 
+const submitVideoForm = (title, url) => {
+  browser.setValue("input#video-title", title);
+  browser.setValue("input#video-url", url);
+  browser.click("[type=submit]");
+};
+
 describe("user vists landing page", () => {
   describe("with no existing videos", () => {
     it("video container empty", () => {
@@ -26,9 +32,7 @@ describe("user vists landing page", () => {
       const videoUrl = generateRandomUrl("example.com");
 
       browser.url("/videos/create");
-      browser.setValue("input#video-title", "title1");
-      browser.setValue("input#video-url", videoUrl);
-      browser.click("[type=submit]");
+      submitVideoForm("title1", videoUrl);
 
       browser.url("/");
       assert.include(browser.getText("#videos-container"), "title1");
@@ -39,9 +43,7 @@ describe("user vists landing page", () => {
       const videoUrl = generateRandomUrl("example.com");
 
       browser.url("/videos/create");
-      browser.setValue("input#video-title", "title1");
-      browser.setValue("input#video-url", videoUrl);
-      browser.click("[type=submit]");
+      submitVideoForm("title1", videoUrl);
 
       browser.url("/");
       browser.click(".video-card a");
