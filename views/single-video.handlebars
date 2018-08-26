@@ -1,9 +1,11 @@
 <div class="contents-container">
-  <p>
-    {{video.title}}
-  </p>
-  <iframe class="video-player" frameborder="0" src="{{video.url}}"></iframe>
-  <p>
-    {{video.description}}
-  </p>
+  <div class="video-card">
+    <h1 class="video-title">
+      {{video.title}}
+    </h1>
+    <iframe class="video-player" frameborder="0" src="{{video.url}}"></iframe>
+    <div class="video-description">
+      {{video.description}}
+    </div>
+  </div>
 </div>
