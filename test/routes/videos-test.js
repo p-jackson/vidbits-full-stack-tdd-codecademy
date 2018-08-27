@@ -186,4 +186,154 @@ describe("Server path: /videos", () => {
       );
     });
   });
+
+  describe("GET - /videos/:id/edit", () => {
+    it("renders a form for the video", async () => {
+      const newVideo = await Video.create({
+        title: "my title",
+        description: "my desc",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      const response = await request(app).get(`/videos/${newVideo._id}/edit`);
+
+      assert.include(parseTextFromHTML(response.text, "h1"), "my title");
+      assert.ok(
+        findElement(response.text, "form"),
+        "response should contain form"
+      );
+      assert.strictEqual(
+        findElement(response.text, "input#video-title").getAttribute("value"),
+        "my title"
+      );
+      assert.strictEqual(
+        findElement(response.text, "input#video-url").getAttribute("value"),
+        "https://www.youtube.com/embed/NZlfxWMr7nc"
+      );
+      assert.strictEqual(
+        parseTextFromHTML(response.text, "textarea#video-description"),
+        "my desc"
+      );
+    });
+  });
+
+  describe("POST - /videos/:id/updates", () => {
+    it("updates the record", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "original title",
+        description: "original desc",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      await request(app)
+        .post(`/videos/${videoId}/updates`)
+        .type("form")
+        .send({
+          title: "new title",
+          description: "new desc",
+          url: "https://www.youtube.com/embed/q2fIWB8o-bs"
+        });
+
+      const updatedVideo = await Video.findById(videoId);
+
+      assert.strictEqual(updatedVideo.title, "new title");
+      assert.strictEqual(updatedVideo.description, "new desc");
+      assert.strictEqual(
+        updatedVideo.url,
+        "https://www.youtube.com/embed/q2fIWB8o-bs"
+      );
+    });
+
+    it("redirects to the show video page", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "original title",
+        description: "original desc",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      const response = await request(app)
+        .post(`/videos/${videoId}/updates`)
+        .type("form")
+        .send({
+          title: "new title",
+          description: "new desc",
+          url: "https://www.youtube.com/embed/q2fIWB8o-bs"
+        });
+
+      assert.strictEqual(response.status, 302);
+      assert.strictEqual(response.header.location, `/videos/${videoId}`);
+    });
+
+    it("doesn't update the record when the update request is invalid", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "original title",
+        description: "original desc",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      await request(app)
+        .post(`/videos/${videoId}/updates`)
+        .type("form")
+        .send({
+          title: "",
+          description: "new desc",
+          url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+        });
+
+      const updatedVideo = await Video.findById(videoId);
+
+      assert.strictEqual(updatedVideo.title, "original title");
+      assert.strictEqual(updatedVideo.description, "original desc");
+    });
+
+    it("responds with 400 when the update request is invalid", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "original title",
+        description: "original desc",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      const response = await request(app)
+        .post(`/videos/${videoId}/updates`)
+        .type("form")
+        .send({
+          title: "",
+          description: "new desc",
+          url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+        });
+
+      assert.strictEqual(response.status, 400);
+    });
+
+    it("shows the original values in edit form when the update request is invalid", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "original title",
+        description: "original desc",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      const response = await request(app)
+        .post(`/videos/${videoId}/updates`)
+        .type("form")
+        .send({
+          title: "",
+          description: "new desc",
+          url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+        });
+
+      assert.include(parseTextFromHTML(response.text, "h1"), "original title");
+      assert.strictEqual(
+        findElement(response.text, "input#video-title").getAttribute("value"),
+        "original title"
+      );
+      assert.strictEqual(
+        parseTextFromHTML(response.text, "textarea#video-description"),
+        "original desc"
+      );
+      assert.strictEqual(
+        findElement(response.text, "input#video-url").getAttribute("value"),
+        "https://www.youtube.com/embed/NZlfxWMr7nc"
+      );
+    });
+  });
 });

@@ -30,4 +30,40 @@ router.get("/videos/:id", async (req, res) => {
   res.render("single-video", { video });
 });
 
+router.get("/videos/:id/edit", async (req, res) => {
+  const video = await Video.findById(req.params.id);
+  res.render("edit-video", { video });
+});
+
+router.post("/videos/:id/updates", async (req, res) => {
+  const video = await Video.findById(req.params.id);
+
+  const { title: oldTitle, url: oldUrl, description: oldDescription } = video;
+
+  const {
+    title: newTitle,
+    url: newUrl,
+    description: newDescription
+  } = req.body;
+  video.title = newTitle;
+  video.url = newUrl;
+  video.description = newDescription;
+
+  video.validateSync();
+
+  if (video.errors) {
+    res.status(400);
+    res.render("edit-video", {
+      video: {
+        title: oldTitle,
+        url: oldUrl,
+        description: oldDescription
+      }
+    });
+  } else {
+    await video.save();
+    res.redirect(`/videos/${req.params.id}`);
+  }
+});
+
 module.exports = router;
