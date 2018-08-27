@@ -7,10 +7,11 @@
       <a class="input-button" id="edit" href="/videos/{{video._id}}/edit">
         Edit
       </a>
+      <form action="/videos/{{video._id}}/deletions" method="POST">
+        <input class="input-button" id="delete" value="Delete" type="submit" />
+      </form>
     </div>
     <iframe class="video-player" frameborder="0" src="{{video.url}}"></iframe>
-    <div class="video-description">
-      {{video.description}}
-    </div>
+    <div class="video-description">{{video.description}}</div>
   </div>
 </div>

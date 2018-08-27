@@ -336,4 +336,34 @@ describe("Server path: /videos", () => {
       );
     });
   });
+
+  describe("POST - /videos/:id/deletions", () => {
+    it("deletes the video", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "title",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      await request(app)
+        .post(`/videos/${videoId}/deletions`)
+        .send();
+
+      const found = await Video.findById(videoId);
+      assert.notOk(found, "video record should be removed");
+    });
+
+    it("redirects to the landing page", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "title",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      const response = await request(app)
+        .post(`/videos/${videoId}/deletions`)
+        .send();
+
+      assert.strictEqual(response.status, 302);
+      assert.strictEqual(response.header.location, "/");
+    });
+  });
 });
