@@ -40,4 +40,16 @@ describe("Model: Video", () => {
       assert.isOk(video.errors.url, "video model should contain errors");
     });
   });
+
+  describe("#comments", () => {
+    it("is a string array", () => {
+      const video = new Video({ comments: [3] });
+      assert.deepEqual(video.comments, ["3"]);
+    });
+
+    it("defaults to an empty array", () => {
+      const video = new Video({});
+      assert.deepEqual(video.comments, []);
+    });
+  });
 });

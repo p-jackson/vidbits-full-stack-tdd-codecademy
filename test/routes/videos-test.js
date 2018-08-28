@@ -366,4 +366,60 @@ describe("Server path: /videos", () => {
       assert.strictEqual(response.header.location, "/");
     });
   });
+
+  describe("POST - /videos/:id/comments", () => {
+    it("adds a comment to video that has no comments", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "title",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      await request(app)
+        .post(`/videos/${videoId}/comments`)
+        .type("form")
+        .send({ value: "nice vid!" });
+
+      const found = await Video.findById(videoId);
+      assert.deepEqual(found.comments, ["nice vid!"]);
+    });
+
+    it("prepends comments to video that has a comment", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "title",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc",
+        comments: ["comment 1"]
+      });
+
+      await request(app)
+        .post(`/videos/${videoId}/comments`)
+        .type("form")
+        .send({ value: "comment 2" });
+
+      const found = await Video.findById(videoId);
+      assert.deepEqual(found.comments, ["comment 2", "comment 1"]);
+    });
+
+    it("renders the show video page with the new comment", async () => {
+      const { _id: videoId } = await Video.create({
+        title: "my title",
+        url: "https://www.youtube.com/embed/NZlfxWMr7nc"
+      });
+
+      const response = await request(app)
+        .post(`/videos/${videoId}/comments`)
+        .type("form")
+        .send({ value: "nice vid!" })
+        .redirects(1);
+
+      assert.include(parseTextFromHTML(response.text, "body"), "my title");
+      assert.strictEqual(
+        findElement(response.text, "iframe").getAttribute("src"),
+        "https://www.youtube.com/embed/NZlfxWMr7nc"
+      );
+      assert.include(
+        parseTextFromHTML(response.text, "#comments"),
+        "nice vid!"
+      );
+    });
+  });
 });

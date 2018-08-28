@@ -12,6 +12,23 @@
       </form>
     </div>
     <iframe class="video-player" frameborder="0" src="{{video.url}}"></iframe>
-    <div class="video-description">{{video.description}}</div>
+    <div class="video-description">
+      {{video.description}}
+    </div>
+    <hr />
+    <h2>
+      Comments
+    </h2>
+    <form action="/videos/{{video._id}}/comments" method="POST">
+      <textarea name="value" id="comment-input"></textarea>
+      <input type="submit" id="comment" value="Comment" />
+    </form>
+    <ul id="comments">
+      {{#each video.comments}}
+        <li>
+          {{this}}
+        </li>
+      {{/each}}
+    </ul>
   </div>
 </div>

@@ -72,4 +72,24 @@ router.post("/videos/:id/deletions", async (req, res) => {
   res.redirect("/");
 });
 
+router.post("/videos/:id/comments", async (req, res) => {
+  const { value } = req.body;
+  await prependComment(req.params.id, value);
+  res.redirect(`/videos/${req.params.id}`);
+});
+
+function prependComment(videoId, comment) {
+  return new Promise((resolve, reject) => {
+    Video.findByIdAndUpdate(
+      videoId,
+      { $push: { comments: { $each: [comment], $position: 0 } } },
+      { new: true },
+      (err, model) => {
+        if (err) reject(err);
+        else resolve(model);
+      }
+    );
+  });
+}
+
 module.exports = router;
